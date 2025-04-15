@@ -27,7 +27,7 @@ def create_app():
     app.register_blueprint(genres_bp, url_prefix='/genres')
 
     # Error handlers
-    # from .errors.handlers import register_error_handlers
-    # register_error_handlers(app)
+    from .errors.handlers import register_error_handlers
+    register_error_handlers(app)
 
     return app
