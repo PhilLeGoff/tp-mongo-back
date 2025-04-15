@@ -11,7 +11,7 @@ class Movie:
     @staticmethod
     def get_all(mongo):
         """Get all posts"""
-        return list(mongo.db.movies.find())
+        return list(mongo.db.movies.find().limit(50))
 
     @staticmethod
     def get_by_id(mongo, movie_id):
