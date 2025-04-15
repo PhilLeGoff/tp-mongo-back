@@ -12,7 +12,7 @@ def get_movies():
     posts = movie_service.get_movies()
     return jsonify(posts), 200
 
-@movies_bp.route('/<post_id>', methods=['GET'])
+@movies_bp.route('/<movie_id>', methods=['GET'])
 def get_post(movie_id):
     movie = movie_service.get_movie(movies_bp)
     if movie:
