@@ -44,7 +44,17 @@ def get_common_genres():
 
     return jsonify(sorted_genres), 200
 
-
+@app.route("/genres/<genre_name>", methods=["GET"])
+def get_movies_by_genre(genre_name):
+    query = {
+        "genres": {
+            "$elemMatch": {
+                "name": {"$regex": f"^{genre_name}$", "$options": "i"}
+            }
+        }
+    }
+    movies = list(mongo.db.movies.find(query, {"_id": 0}))
+    return jsonify(movies), 200
 
 if __name__ == '__main__':
     app.run()
