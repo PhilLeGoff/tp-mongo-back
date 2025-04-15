@@ -16,7 +16,7 @@ def get_genres():
 @genres_bp.route("/popular", methods=["GET"])
 def get_common_genres():
     all_movies = mongo.db.movies.find({}, {"genres": 1})
-    
+
     genres = []
     for movie in all_movies:
         if "genres" in movie and isinstance(movie["genres"], list):
@@ -25,7 +25,7 @@ def get_common_genres():
                     genres.append(g["name"])
                 elif isinstance(g, str):
                     genres.append(g)
-    
+
     genre_counts = Counter(genres)
     sorted_genres = genre_counts.most_common(5)
 

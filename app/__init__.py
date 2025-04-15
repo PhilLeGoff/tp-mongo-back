@@ -6,10 +6,9 @@ import os
 from .extensions import mongo
 from flask_cors import CORS
 
-load_dotenv()
-
 def create_app():
     app = Flask(__name__)
+    load_dotenv()
     # config = configparser.ConfigParser()
     # config.read(os.path.abspath(os.path.join(".ini")))
     CORS(app)
