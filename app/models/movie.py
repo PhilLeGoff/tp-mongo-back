@@ -16,4 +16,4 @@ class Movie:
     @staticmethod
     def get_by_id(mongo, movie_id):
         """Get single post by ID"""
-        return mongo.db.films.find_one({"_id": movie_id})
+        return mongo.db.movies.find_one({"_id": movie_id})
