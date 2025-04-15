@@ -9,7 +9,7 @@ genre_service = GenreService(mongo)
 
 
 @genres_bp.route('/', methods=['GET'])
-def get_movies():
+def get_genres():
     posts = genres_bp.get_genres()
     return jsonify(posts), 200
 
