@@ -1,0 +1,14 @@
+from bson import ObjectId
+
+from app.models.movie import Movie
+
+
+class MovieService:
+    def __init__(self, mongo):
+        self.mongo = mongo
+
+    def get_movies(self):
+        return Movie.get_all(self.mongo)
+
+    def get_movie(self, movie_id):
+        return Movie.get_by_id(self.mongo, ObjectId(movie_id))
