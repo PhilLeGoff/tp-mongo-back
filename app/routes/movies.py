@@ -19,10 +19,24 @@ def get_movie(movie_id):
         return jsonify(movie), 200
     return jsonify({"error": "Post not found"}), 404
 
+@movies_bp.route('/cursor', methods=['GET'])
+def get_movies_cursor():
+    last_id = request.args.get('last_id')
+    per_page = int(request.args.get('per_page', 10))
+    movies = list(movie_service.get_movies_cursor(last_id, per_page))
+    return jsonify({
+        "movies": movies,
+        "next_cursor": str(movies[-1]['_id']) if movies else None
+    }), 200
+
+@movies_bp.route('/latest', methods=['GET'])
+def get_latest_movies():
+    movies = list(movie_service.get_latest())
+    return jsonify(movies), 200
+
 @movies_bp.route('/popular', methods=['GET'])
 def get_popular_movies():
-    limit = int(request.args.get("limit", 10))
-    movies = movie_service.get_popular_movies(limit)
+    movies = list(movie_service.get_popular())
     return jsonify(movies), 200
 
 @movies_bp.route("/latest", methods=["GET"])
@@ -62,3 +76,8 @@ def hottest_movies():
     except Exception as e:
         print("❌ ERROR in hottest_movies:", e)
         return jsonify({"error": "Internal Server Error"}), 500
+      
+@movies_bp.route('/title_frequency', methods=['GET'])
+def get_title_frequency():
+    movies = list(movie_service.get_title_frequency())
+    return jsonify(movies), 200

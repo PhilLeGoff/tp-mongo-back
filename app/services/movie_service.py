@@ -151,3 +151,16 @@ class MovieService:
                 }
             ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
         )
+      
+    def get_latest(self):
+        return Movie.get_latest(self.mongo)
+
+    def get_popular(self):
+        return Movie.get_popular(self.mongo)
+
+    #cursor based pagination
+    def get_movies_cursor(self, last_id=None, per_page=10):
+        return Movie.get_all_cursor(self.mongo, last_id, per_page)
+
+    def get_title_frequency(self):
+        return Movie.get_title_frequency(self.mongo)

@@ -14,22 +14,7 @@ class GenreService:
     def get_genre(self, genre_id):
         return Genre.get_by_id(self.mongo, ObjectId(genre_id))
 
-    def get_movies_by_genre(self, genre_name, limit=10):
-        query = {
-            "genres": {
-                "$elemMatch": {
-                    "name": {"$regex": f"^{genre_name}$", "$options": "i"}
-                }
-            }
-        }
-
-        return list(
-            self.mongo.db.movies.find(query, {"_id": 0})
-            .sort("popularity", -1)
-            .limit(limit)
-        )    
-    
-    def get_most_common_genres(self, limit=5):
+    def get_most_common_genres(self, limit=10):
         all_movies = self.mongo.db.movies.find({}, {"genres": 1})
 
         genres = []
@@ -45,3 +30,18 @@ class GenreService:
         sorted_genres = genre_counts.most_common(limit)
 
         return [{"name": g[0], "count": g[1]} for g in sorted_genres]
+    
+    def get_popular_movies_by_genre(self, genre_name, limit=10):
+        query = {
+            "genres": {
+                "$elemMatch": {
+                    "name": {"$regex": f"^{genre_name}$", "$options": "i"}
+                }
+            }
+        }
+
+        return list(
+            self.mongo.db.movies.find(query, {"_id": 0})
+            .sort("popularity", -1)
+            .limit(limit)
+        )
