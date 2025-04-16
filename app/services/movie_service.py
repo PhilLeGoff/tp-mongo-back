@@ -71,50 +71,26 @@ class MovieService:
         return Movie.get_title_frequency(self.mongo)
 
     def get_new_releases(self):
-        return list(self.mongo.db.movies.find(
-            {"release_date": {"$exists": True, "$ne": ""}},
-            {"_id": 0, "title": 1, "poster_path": 1, "release_date": 1}
-        ).sort("release_date", -1).limit(15))
+        return Movie.get_new_releases(self.mongo)
 
     def get_most_popular(self):
-        return list(self.mongo.db.movies.find(
-            {"poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1, "popularity": 1}
-        ).sort("popularity", -1).limit(15))
+        return Movie.get_most_popular(self.mongo)
 
     def get_critically_acclaimed(self):
-        return list(self.mongo.db.movies.find(
-            {"vote_average": {"$gte": 8}, "vote_count": {"$gt": 1000}},
-            {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
-        ).sort("vote_average", -1).limit(15))
+        return Movie.get_critically_acclaimed(self.mongo)
 
     def get_long_movies(self):
-        return list(self.mongo.db.movies.find(
-            {"runtime": {"$gte": 150}, "poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1}
-        ).limit(15))
+        return Movie.get_long_movies(self.mongo)
 
     def get_short_movies(self):
-        return list(self.mongo.db.movies.find(
-            {"runtime": {"$lte": 90}, "poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1}
-        ).limit(15))
+        return Movie.get_short_movies(self.mongo)
 
     def get_movies_by_decade(self, start_year):
-        return list(self.mongo.db.movies.find(
-            {"release_date": {"$regex": f"^{start_year}"}},
-            {"_id": 0, "title": 1, "poster_path": 1}
-        ).limit(15))
+        return Movie.get_movies_by_decade(self.mongo, start_year)
 
     def get_movies_by_genre(self, genre_name):
-        return list(self.mongo.db.movies.find(
-            {"genres.name": genre_name, "poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1}
-        ).limit(15))
+        return Movie.get_movies_by_genre(self.mongo, genre_name)
 
     def get_true_stories(self):
-        return list(self.mongo.db.movies.find(
-            {"overview": {"$regex": "true story", "$options": "i"}},
-            {"_id": 0, "title": 1, "poster_path": 1}
-        ).limit(15))
+        return Movie.get_true_stories(self.mongo)
 

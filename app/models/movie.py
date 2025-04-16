@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from bson import ObjectId
 
@@ -180,3 +180,58 @@ class Movie:
                 }
             ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
         )
+    @staticmethod
+    def get_new_releases(mongo):
+        return list(mongo.db.movies.find(
+            {"release_date": {"$exists": True, "$ne": ""}},
+            {"_id": 0, "title": 1, "poster_path": 1, "release_date": 1}
+        ).sort("release_date", -1).limit(15))
+
+    @staticmethod
+    def get_most_popular(mongo):
+        return list(mongo.db.movies.find(
+            {"poster_path": {"$ne": None}},
+            {"_id": 0, "title": 1, "poster_path": 1, "popularity": 1}
+        ).sort("popularity", -1).limit(15))
+
+    @staticmethod
+    def get_critically_acclaimed(mongo):
+        return list(self.mongo.db.movies.find(
+            {"vote_average": {"$gte": 8}, "vote_count": {"$gt": 1000}},
+            {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
+        ).sort("vote_average", -1).limit(15))
+
+    @staticmethod
+    def get_long_movies(mongo):
+        return list(mongo.db.movies.find(
+            {"runtime": {"$gte": 150}, "poster_path": {"$ne": None}},
+            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1}
+        ).limit(15))
+
+    @staticmethod
+    def get_short_movies(mongo):
+        return list(mongo.db.movies.find(
+            {"runtime": {"$lte": 90}, "poster_path": {"$ne": None}},
+            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1}
+        ).limit(15))
+
+    @staticmethod
+    def get_movies_by_decade(mongo, start_year):
+        return list(mongo.db.movies.find(
+            {"release_date": {"$regex": f"^{start_year}"}},
+            {"_id": 0, "title": 1, "poster_path": 1}
+        ).limit(15))
+
+    @staticmethod
+    def get_movies_by_genre(mongo, genre_name):
+        return list(mongo.db.movies.find(
+            {"genres.name": genre_name, "poster_path": {"$ne": None}},
+            {"_id": 0, "title": 1, "poster_path": 1}
+        ).limit(15))
+
+    @staticmethod
+    def get_true_stories(mongo):
+        return list(mongo.db.movies.find(
+            {"overview": {"$regex": "true story", "$options": "i"}},
+            {"_id": 0, "title": 1, "poster_path": 1}
+        ).limit(15))
