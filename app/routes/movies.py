@@ -29,11 +29,6 @@ def get_movies_cursor():
         "next_cursor": str(movies[-1]['_id']) if movies else None
     }), 200
 
-@movies_bp.route('/latest', methods=['GET'])
-def get_latest_movies():
-    movies = list(movie_service.get_latest())
-    return jsonify(movies), 200
-
 @movies_bp.route('/popular', methods=['GET'])
 def get_popular_movies():
     movies = list(movie_service.get_popular())
