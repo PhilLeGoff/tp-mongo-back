@@ -18,3 +18,8 @@ def get_movie(movie_id):
     if movie:
         return jsonify(movie), 200
     return jsonify({"error": "Post not found"}), 404
+
+@movies_bp.route('/popular', methods=['GET'])
+def get_popular_movies():
+    movies = movie_service.get_popular_movies()
+    return jsonify(movies), 200

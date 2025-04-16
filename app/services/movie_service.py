@@ -12,3 +12,10 @@ class MovieService:
 
     def get_movie(self, movie_id):
         return Movie.get_by_id(self.mongo, ObjectId(movie_id))
+
+    def get_popular_movies(mongo, limit=10):
+        return list(
+            mongo.db.movies.find({}, {"_id": 0})
+            .sort("popularity", -1)
+            .limit(limit)
+        )
