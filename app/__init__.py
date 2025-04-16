@@ -10,7 +10,9 @@ def create_app():
     app = Flask(__name__)
     app.config['JSON_AS_ASCII'] = False
     load_dotenv()
-    CORS(app)
+    # config = configparser.ConfigParser()
+    # config.read(os.path.abspath(os.path.join(".ini")))
+    CORS(app, origins=["http://localhost:5173"])
     # Configuration
     # app.config["MONGO_URI"] = config['PROD']['DB_URI']
     # app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
