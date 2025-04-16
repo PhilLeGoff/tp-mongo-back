@@ -38,3 +38,8 @@ def get_latest_movies():
 def get_popular_movies():
     movies = list(movie_service.get_popular())
     return jsonify(movies), 200
+
+@movies_bp.route('/title_frequency', methods=['GET'])
+def get_title_frequency():
+    movies = list(movie_service.get_title_frequency())
+    return jsonify(movies), 200

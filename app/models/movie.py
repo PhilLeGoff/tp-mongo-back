@@ -40,3 +40,17 @@ class Movie:
                 .find(query)
                 .sort("_id", 1)
                 .limit(per_page))
+
+    @staticmethod
+    def get_title_frequency(mongo):
+                """Get the most repeated word count in movie titles"""
+                from collections import Counter
+
+                titles = mongo.db.movies.distinct("title")  # Get all unique titles
+                words = []
+                excluded_words = {"the", "a", "an", "of", "-", "_", "and", "in", "to", "de", "&"}  # Set of articles to exclude
+                for title in titles:
+                    words.extend(word for word in title.split() if word.lower() not in excluded_words)
+
+                word_counts = Counter(words)  # Count word frequencies
+                return word_counts.most_common(1)  # Return the most common word and its count

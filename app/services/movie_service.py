@@ -22,3 +22,6 @@ class MovieService:
     #cursor based pagination
     def get_movies_cursor(self, last_id=None, per_page=10):
         return Movie.get_all_cursor(self.mongo, last_id, per_page)
+
+    def get_title_frequency(self):
+        return Movie.get_title_frequency(self.mongo)
