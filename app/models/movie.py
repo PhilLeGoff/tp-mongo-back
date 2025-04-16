@@ -21,9 +21,12 @@ class Movie:
         return mongo.db.movies.find_one({"_id": movie_id})
 
     @staticmethod
-    def get_latest(mongo):
-        "les derniers films sortis"
-        return mongo.db.movies.find().sort("created_at", -1).limit(10)
+    def get_latest(mongo, limit=10):
+        """les derniers films sortis"""
+        return list(mongo.db.movies.find(
+                {"release_date": {"$exists": True, "$ne": ""}},
+                {"_id": 0}
+            ).sort("release_date", -1).limit(limit))
 
     @staticmethod
     def get_popular(mongo):
@@ -54,3 +57,11 @@ class Movie:
 
                 word_counts = Counter(words)  # Count word frequencies
                 return word_counts.most_common(1)  # Return the most common word and its count
+
+    @staticmethod
+    def get_popular_movies(mongo, limit=10):
+        return list(
+            mongo.db.movies.find({}, {"_id": 0})
+            .sort("popularity", -1)
+            .limit(limit)
+        )

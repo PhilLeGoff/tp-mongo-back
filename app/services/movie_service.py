@@ -14,20 +14,11 @@ class MovieService:
     def get_movie(self, movie_id):
         return Movie.get_by_id(self.mongo, ObjectId(movie_id))
 
-    def get_popular_movies(mongo, limit=10):
-        return list(
-            mongo.db.movies.find({}, {"_id": 0})
-            .sort("popularity", -1)
-            .limit(limit)
-        )
+    def get_popular_movies(self, limit=10):
+        return Movie.get_popular_movies(self.mongo, limit)
 
     def get_latest_movies(self, limit=10):
-        return list(
-            self.mongo.db.movies.find(
-                {"release_date": {"$exists": True, "$ne": ""}},
-                {"_id": 0}
-            ).sort("release_date", -1).limit(limit)
-        )
+        return Movie.get_latest(self.mongo, limit)
 
     def get_top_rated_movies(self, limit=10):
         return list(
