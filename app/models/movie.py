@@ -21,6 +21,16 @@ class Movie:
         return mongo.db.movies.find_one({"_id": movie_id})
 
     @staticmethod
+    def get_latest(mongo):
+        "les derniers films sortis"
+        return mongo.db.movies.find().sort("created_at", -1).limit(10)
+
+    @staticmethod
+    def get_popular(mongo):
+        "films les plus pop"
+        return mongo.db.movies.find().sort("popularity", -1).limit(10)
+
+    @staticmethod
     def get_all_cursor(mongo, last_id=None, per_page=10):
         """Get all movies with pagination"""
         query = {}

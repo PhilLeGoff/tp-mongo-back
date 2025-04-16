@@ -9,8 +9,6 @@ from flask_cors import CORS
 def create_app():
     app = Flask(__name__)
     load_dotenv()
-    # config = configparser.ConfigParser()
-    # config.read(os.path.abspath(os.path.join(".ini")))
     CORS(app)
     # Configuration
     # app.config["MONGO_URI"] = config['PROD']['DB_URI']
