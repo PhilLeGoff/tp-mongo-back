@@ -20,7 +20,7 @@ class MovieService:
             .sort("popularity", -1)
             .limit(limit)
         )
-    
+
     def get_latest_movies(self, limit=10):
         return list(
             self.mongo.db.movies.find(
@@ -43,6 +43,7 @@ class MovieService:
                 }
             ).sort("vote_average", -1).limit(limit)
         )
+
     def get_most_appreciated_genres(self, limit=5):
         pipeline = [
             {"$unwind": "$genres"},
@@ -55,7 +56,7 @@ class MovieService:
             {"$limit": limit}
         ]
         return list(self.mongo.db.movies.aggregate(pipeline))
-    
+
     def get_best_movies_by_decade(self):
         decades = self.get_available_decades()
         results = []
@@ -112,8 +113,6 @@ class MovieService:
             projection={"_id": 0, "title": 1, "vote_average": 1, "poster_path": 1}
         )
 
-
-    
     def get_top_rated_movies(self, limit=5):
         return list(
             self.mongo.db.movies.find(
@@ -121,7 +120,7 @@ class MovieService:
                 {"_id": 0, "title": 1, "vote_average": 1, "vote_count": 1, "poster_path": 1}
             ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
         )
-    
+
     def get_underrated_gems(self, limit=5):
         return list(
             self.mongo.db.movies.find(
@@ -129,7 +128,7 @@ class MovieService:
                 {"_id": 0, "title": 1, "vote_average": 1, "vote_count": 1, "poster_path": 1}
             ).sort("vote_average", -1).limit(limit)
         )
-    
+
     def get_hottest_movies(self, limit=10):
         three_months_ago = datetime.now() - timedelta(days=90)
 
@@ -151,7 +150,7 @@ class MovieService:
                 }
             ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
         )
-      
+
     def get_latest(self):
         return Movie.get_latest(self.mongo)
 
