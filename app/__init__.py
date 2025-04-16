@@ -8,8 +8,11 @@ from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    app.config['JSON_AS_ASCII'] = False
     load_dotenv()
-    CORS(app)
+    # config = configparser.ConfigParser()
+    # config.read(os.path.abspath(os.path.join(".ini")))
+    CORS(app, origins=["http://localhost:5173"])
     # Configuration
     # app.config["MONGO_URI"] = config['PROD']['DB_URI']
     # app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
@@ -27,5 +30,9 @@ def create_app():
     # Error handlers
     from .errors.handlers import register_error_handlers
     register_error_handlers(app)
+
+    @app.route('/')
+    def index():
+        return {'message': 'Bienvenue sur l’API Movie-App 🎬'}, 200
 
     return app
