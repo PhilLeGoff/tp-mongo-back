@@ -8,6 +8,7 @@ from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    app.config['JSON_AS_ASCII'] = False
     load_dotenv()
     CORS(app)
     # Configuration
@@ -27,5 +28,9 @@ def create_app():
     # Error handlers
     from .errors.handlers import register_error_handlers
     register_error_handlers(app)
+
+    @app.route('/')
+    def index():
+        return {'message': 'Bienvenue sur l’API Movie-App 🎬'}, 200
 
     return app
