@@ -18,3 +18,13 @@ def get_movie(movie_id):
     if movie:
         return jsonify(movie), 200
     return jsonify({"error": "Post not found"}), 404
+
+@movies_bp.route('/cursor', methods=['GET'])
+def get_movies_cursor():
+    last_id = request.args.get('last_id')
+    per_page = int(request.args.get('per_page', 10))
+    movies = list(movie_service.get_movies_cursor(last_id, per_page))
+    return jsonify({
+        "movies": movies,
+        "next_cursor": str(movies[-1]['_id']) if movies else None
+    }), 200

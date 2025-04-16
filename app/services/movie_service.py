@@ -12,3 +12,7 @@ class MovieService:
 
     def get_movie(self, movie_id):
         return Movie.get_by_id(self.mongo, ObjectId(movie_id))
+
+    #cursor based pagination
+    def get_movies_cursor(self, last_id=None, per_page=10):
+        return Movie.get_all_cursor(self.mongo, last_id, per_page)
