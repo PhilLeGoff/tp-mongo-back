@@ -123,7 +123,6 @@ class MovieService:
             ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
         )
 
-    def get_underrated_gems(self, limit=5):
     
     def get_underrated_gems(self, limit=20):
         return list(
