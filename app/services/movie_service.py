@@ -19,3 +19,11 @@ class MovieService:
             .sort("popularity", -1)
             .limit(limit)
         )
+    
+    def get_latest_movies(self, limit=10):
+        return list(
+            self.mongo.db.movies.find(
+                {"release_date": {"$exists": True, "$ne": ""}},
+                {"_id": 0}
+            ).sort("release_date", -1).limit(limit)
+        )

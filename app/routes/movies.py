@@ -21,5 +21,12 @@ def get_movie(movie_id):
 
 @movies_bp.route('/popular', methods=['GET'])
 def get_popular_movies():
-    movies = movie_service.get_popular_movies()
+    limit = int(request.args.get("limit", 10))
+    movies = movie_service.get_popular_movies(limit)
+    return jsonify(movies), 200
+
+@movies_bp.route("/latest", methods=["GET"])
+def get_latest_movies():
+    limit = int(request.args.get("limit", 10))
+    movies = movie_service.get_latest_movies(limit)
     return jsonify(movies), 200
