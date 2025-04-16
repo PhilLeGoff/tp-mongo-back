@@ -76,3 +76,55 @@ def hottest_movies():
 def get_title_frequency():
     movies = list(movie_service.get_title_frequency())
     return jsonify(movies), 200
+
+# Specific routes FIRST
+@movies_bp.route("/new-releases", methods=["GET"])
+def get_new_releases():
+    return jsonify(movie_service.get_new_releases()), 200
+
+@movies_bp.route("/most-popular", methods=["GET"])
+def get_most_popular():
+    return jsonify(movie_service.get_most_popular()), 200
+
+@movies_bp.route("/critically-acclaimed", methods=["GET"])
+def get_critically_acclaimed():
+    return jsonify(movie_service.get_critically_acclaimed()), 200
+
+@movies_bp.route("/underrated", methods=["GET"])
+def get_underrated():
+    return jsonify(movie_service.get_underrated_gems(limit=15)), 200
+
+@movies_bp.route("/long-watches", methods=["GET"])
+def get_long_watches():
+    return jsonify(movie_service.get_long_movies()), 200
+
+@movies_bp.route("/short-movies", methods=["GET"])
+def get_short_movies():
+    return jsonify(movie_service.get_short_movies()), 200
+
+@movies_bp.route("/nostalgia-90s", methods=["GET"])
+def get_nostalgia_90s():
+    return jsonify(movie_service.get_movies_by_decade(1990)), 200
+
+@movies_bp.route("/sci-fi", methods=["GET"])
+def get_sci_fi():
+    return jsonify(movie_service.get_movies_by_genre("Science Fiction")), 200
+
+@movies_bp.route("/true-stories", methods=["GET"])
+def get_true_stories():
+    return jsonify(movie_service.get_true_stories()), 200
+
+# Dynamic ID route LAST — with unique name
+@movies_bp.route('/<movie_id>', methods=['GET'])
+def get_movie_by_id(movie_id):
+    from bson import ObjectId
+    from bson.errors import InvalidId
+
+    try:
+        object_id = ObjectId(movie_id)
+        movie = movie_service.get_movie(object_id)
+        if movie:
+            return jsonify(movie), 200
+        return jsonify({"error": "Movie not found"}), 404
+    except InvalidId:
+        return jsonify({"error": "Invalid movie ID"}), 400
