@@ -78,6 +78,12 @@ def get_title_frequency():
     return jsonify(movies), 200
 
 # Specific routes FIRST
+@movies_bp.route("/recommended/", methods=["GET"])
+def get_recommendations():
+    user_ip = request.remote_addr
+    recommendations = movie_service.get_recommendations(user_ip)
+    return jsonify(recommendations), 200
+
 @movies_bp.route("/new-releases", methods=["GET"])
 def get_new_releases():
     return jsonify(movie_service.get_new_releases()), 200
