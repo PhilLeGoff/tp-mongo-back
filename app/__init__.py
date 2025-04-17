@@ -24,8 +24,10 @@ def create_app():
     # Register blueprints
     from .routes.movies import movies_bp
     from .routes.genres import genres_bp
+    from .routes.actors import actors_bp
     app.register_blueprint(movies_bp, url_prefix='/films')
     app.register_blueprint(genres_bp, url_prefix='/genres')
+    app.register_blueprint(actors_bp, url_prefix='/actors')
 
     # Error handlers
     from .errors.handlers import register_error_handlers
