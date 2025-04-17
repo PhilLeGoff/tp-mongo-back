@@ -25,6 +25,8 @@ class MovieService:
 
     def get_most_appreciated_genres(self, limit=5):
         return Movie.get_most_appreciated_genres(self.mongo, limit)
+    def search_movies(self, keyword, genre):
+        return Movie.search_movies(self.mongo, keyword, genre)
 
     def get_best_movies_by_decade(self):
         decades = Movie.get_available_decades(self.mongo)

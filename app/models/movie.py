@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from bson import ObjectId
+from pymongo import ASCENDING
 
 
 class Movie:
@@ -235,3 +236,31 @@ class Movie:
             {"overview": {"$regex": "true story", "$options": "i"}},
             {"_id": 0, "title": 1, "poster_path": 1}
         ).limit(15))
+
+    @staticmethod
+    def search_movies(mongo, keyword, genre):
+        pipeline = []
+
+        if keyword:
+            pipeline.append({
+                "$match": {
+                    "title": {
+                        "$regex": keyword,
+                        "$options": "i"  # insensitive
+                    }
+                }
+            })
+
+        if genre:
+            pipeline.append({
+                "$match": {
+                    "genres.name": genre  # match si "genres": ["Action", "Sci-Fi"]
+                }
+            })
+        # Optional: sort by title
+        # pipeline.append({"$sort": {"title": ASCENDING}})
+        pipeline.append({"$limit": 10})
+        print(pipeline)
+        movies = list(mongo.db.movies.aggregate(pipeline))
+        # print(movies)
+        return movies

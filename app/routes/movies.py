@@ -71,7 +71,7 @@ def hottest_movies():
     except Exception as e:
         print("❌ ERROR in hottest_movies:", e)
         return jsonify({"error": "Internal Server Error"}), 500
-      
+
 @movies_bp.route('/title_frequency', methods=['GET'])
 def get_title_frequency():
     movies = list(movie_service.get_title_frequency())
@@ -128,3 +128,9 @@ def get_movie_by_id(movie_id):
         return jsonify({"error": "Movie not found"}), 404
     except InvalidId:
         return jsonify({"error": "Invalid movie ID"}), 400
+
+@movies_bp.route('/search', methods=['GET'])
+def search_movies():
+    keyword = request.args.get('q', '')
+    genre = request.args.get('genre', '')
+    return jsonify(movie_service.search_movies(keyword, genre)), 200
