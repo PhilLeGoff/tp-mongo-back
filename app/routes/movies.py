@@ -52,7 +52,7 @@ def analytics_overview():
     try:
         data = {
             "appreciatedGenres": movie_service.get_most_appreciated_genres(),
-            "topMoviesByDecade": movie_service.get_best_movies_by_decade(),
+            "topMoviesByDecade": movie_service.get_best_movies_by_decade(1960),
             "topRated": movie_service.get_top_rated_movies(),
             "surprise": movie_service.get_underrated_gems()
         }
@@ -94,17 +94,17 @@ def get_critically_acclaimed():
 def get_underrated():
     return jsonify(movie_service.get_underrated_gems(limit=15)), 200
 
-@movies_bp.route("/best-french", methods=["GET"])
-def get_best_french_movies():
-    return jsonify(movie_service.get_best_french_movies())
+@movies_bp.route("/long-watches", methods=["GET"])
+def get_long_watches():
+    return jsonify(movie_service.get_long_movies()), 200
 
-@movies_bp.route("/best-action", methods=["GET"])
-def get_best_action_movies():
-    return jsonify(movie_service.get_best_action_movies())
-    
+@movies_bp.route("/short-movies", methods=["GET"])
+def get_short_movies():
+    return jsonify(movie_service.get_short_movies()), 200
+
 @movies_bp.route("/nostalgia-90s", methods=["GET"])
 def get_nostalgia_90s():
-    return jsonify(movie_service.get_movies_by_decade(1990)), 200
+    return jsonify(movie_service.get_best_movies_by_decade(1990)), 200
 
 @movies_bp.route("/sci-fi", methods=["GET"])
 def get_sci_fi():

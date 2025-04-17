@@ -2,6 +2,7 @@ from bson import ObjectId
 from datetime import datetime, timedelta
 import os
 from app.models.movie import Movie
+import os
 import requests
 from threading import Thread
 
@@ -17,7 +18,7 @@ class MovieService:
         return Movie.get_all(self.mongo)
 
     def get_movie(self, movie_id):
-        return Movie.get_by_id(self.mongo, ObjectId(movie_id))
+        return Movie.get_by_id(self.mongo, movie_id)
 
     def get_popular_movies(self, limit=10):
         return Movie.get_popular_movies(self.mongo, limit)
@@ -26,195 +27,59 @@ class MovieService:
         return Movie.get_latest(self.mongo, limit)
 
     def get_top_rated_movies(self, limit=10):
-        return list(
-            self.mongo.db.movies.find(
-                {
-                    "poster_path": { "$ne": None }  # or "$exists": True if needed
-                },
-                {
-                    "_id": 0,
-                    "title": 1,
-                    "vote_average": 1,
-                    "poster_path": 1,
-                    "id": 1
-                }
-            ).sort("vote_average", -1).limit(limit)
-        )
+        return Movie.get_top_rated_movies(self.mongo, limit)
 
     def get_most_appreciated_genres(self, limit=5):
         return Movie.get_most_appreciated_genres(self.mongo, limit)
 
     def get_best_movies_by_decade(self):
-        decades = Movie.get_available_decades(self.mongo)
-        results = []
-
-        for decade in decades:
-            movie = Movie.get_best_movie_for_decade(self.mongo, decade)
-            if movie:
-                # Ajoute la décennie directement dans le titre
-                movie["title"] = f"{movie['title']} ({decade})"
-                results.append({
-                    "decade": decade,
-                    "movie": movie
-                })
-
-        return results
+        return Movie.get_best_movies_by_decade(self.mongo)
 
     def get_available_decades(self):
-        result = self.mongo.db.movies.aggregate([
-            {
-                "$match": {
-                    "release_date": {"$exists": True, "$ne": "", "$regex": r"^\d{4}-\d{2}-\d{2}$"}
-                }
-            },
-            {
-                "$project": {
-                    "decade": {
-                        "$concat": [
-                            {"$toString": {
-                                "$multiply": [
-                                    {"$floor": {"$divide": [{"$year": {"$toDate": "$release_date"}}, 10]}},
-                                    10
-                                ]
-                            }},
-                            "s"
-                        ]
-                    }
-                }
-            },
-            {"$group": {"_id": "$decade"}},
-            {"$sort": {"_id": 1}}
-        ])
-        return [doc["_id"] for doc in result]
+        return Movie.get_available_decades(self.mongo)
 
     def get_best_movie_for_decade(self, decade):
-        decade_start = int(decade[:-1])  # "1990s" → 1990
-        decade_end = decade_start + 9
+        return Movie.get_best_movie_for_decade(self.mongo, decade)
 
-        return self.mongo.db.movies.find_one(
-            {
-                "release_date": {"$regex": f"^{decade_start}|^{decade_start+1}|^{decade_end}"},
-                "vote_average": {"$gt": 0},
-                "vote_count": {"$gt": 0},
-                "poster_path": {"$ne": None, "$ne": ""}
-            },
-            sort=[("vote_average", -1), ("vote_count", -1)],
-            projection={"_id": 0, "title": 1, "vote_average": 1, "poster_path": 1, "id": 1}
-        )
-
-    def get_top_rated_movies(self, limit=5):
-        return list(
-            self.mongo.db.movies.find(
-                {"vote_count": {"$gte": 500}, "poster_path": {"$ne": None}},
-                {"_id": 0, "title": 1, "vote_average": 1, "vote_count": 1, "poster_path": 1, "id": 1}
-            ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
-        )
-
-    
     def get_underrated_gems(self, limit=20):
-        return list(
-            self.mongo.db.movies.find(
-                {"vote_average": {"$gte": 7}, "vote_count": {"$lte": 100}, "poster_path": {"$ne": None}},
-                {"_id": 0, "title": 1, "vote_average": 1, "vote_count": 1, "poster_path": 1, "id": 1}
-            ).sort("vote_average", -1).limit(limit)
-        )
+        return Movie.get_underrated_gems(self.mongo, limit)
 
     def get_hottest_movies(self, limit=10):
-        three_months_ago = datetime.now() - timedelta(days=90)
+        return Movie.get_hottest_movies(self.mongo, limit)
 
-        return list(
-            self.mongo.db.movies.find(
-                {
-                    "release_date": {"$gte": three_months_ago.strftime("%Y-%m-%d")},
-                    "vote_count": {"$gte": 100},
-                    "vote_average": {"$gte": 6.0},
-                    "poster_path": {"$ne": None}
-                },
-                {
-                    "_id": 0,
-                    "title": 1,
-                    "vote_average": 1,
-                    "vote_count": 1,
-                    "release_date": 1,
-                    "poster_path": 1, 
-                    "id": 1
-                }
-            ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
-        )
+    def get_new_releases(self):
+        return Movie.get_new_releases(self.mongo)
 
-    def get_latest(self):
-        return Movie.get_latest(self.mongo)
+    def get_most_popular(self):
+        return Movie.get_most_popular(self.mongo)
 
-    def get_popular(self):
-        return Movie.get_popular(self.mongo)
+    def get_critically_acclaimed(self):
+        return Movie.get_critically_acclaimed(self.mongo)
 
-    #cursor based pagination
-    def get_movies_cursor(self, last_id=None, per_page=10):
-        return Movie.get_all_cursor(self.mongo, last_id, per_page)
+    def get_best_french_movies(self, limit=10):
+        return Movie.get_best_french_movies(self.mongo, limit)
+
+    def get_best_action_movies(self, limit=10):
+        return Movie.get_best_action_movies(self.mongo, limit)
+
+    def get_movies_from_90s(self, limit=15):
+        return Movie.get_movies_from_90s(self.mongo, limit)
+
+    def get_best_movies_by_decade(self, start_year):
+        return Movie.get_movies_by_decade(self.mongo, start_year)
+
+    def get_movies_by_genre(self, genre_name):
+        return Movie.get_movies_by_genre(self.mongo, genre_name)
+
+    def get_true_stories(self):
+        return Movie.get_true_stories(self.mongo)
 
     def get_title_frequency(self):
         return Movie.get_title_frequency(self.mongo)
 
-    def get_new_releases(self):
-        return list(self.mongo.db.movies.find(
-            {"release_date": {"$exists": True, "$ne": ""}},
-            {"_id": 0, "title": 1, "poster_path": 1, "release_date": 1, "id": 1}
-        ).sort("release_date", -1).limit(15))
-    
-    def get_most_popular(self):
-        return list(self.mongo.db.movies.find(
-            {"poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1, "popularity": 1, "id": 1}
-        ).sort("popularity", -1).limit(15))
-    
-    def get_critically_acclaimed(self):
-        return list(self.mongo.db.movies.find(
-            {"vote_average": {"$gte": 8}, "vote_count": {"$gt": 1000}},
-            {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1, "id": 1}
-        ).sort("vote_average", -1).limit(15))
-    
-    def get_best_french_movies(self, limit=10):
-        return list(
-            self.mongo.db.movies.find(
-                {
-                    "original_language": "fr",
-                    "vote_count": {"$gte": 100},
-                    "poster_path": {"$ne": None}
-                },
-                {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1, "id": 1}
-            ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
-        )
-    
-    def get_best_action_movies(self, limit=10):
-        return list(
-            self.mongo.db.movies.find(
-                {
-                    "genres.name": "Action",
-                    "vote_count": {"$gte": 100},
-                    "poster_path": {"$ne": None}
-                },
-                {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1, "id": 1}
-            ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
-        )
-    
-    def get_movies_by_decade(self, start_year):
-        return list(self.mongo.db.movies.find(
-            {"release_date": {"$regex": f"^{start_year}"}},
-            {"_id": 0, "title": 1, "poster_path": 1, "id": 1}
-        ).limit(15))
-    
-    def get_movies_by_genre(self, genre_name):
-        return list(self.mongo.db.movies.find(
-            {"genres.name": genre_name, "poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1, "id": 1}
-        ).limit(15))
-    
-    def get_true_stories(self):
-        return list(self.mongo.db.movies.find(
-            {"overview": {"$regex": "true story", "$options": "i"}},
-            {"_id": 0, "title": 1, "poster_path": 1, "id": 1}
-        ).limit(15))
-    
+    def get_movies_cursor(self, last_id=None, per_page=10):
+        return Movie.get_all_cursor(self.mongo, last_id, per_page)
+
     def get_detailed_movie(self, movie_id):
         try:
             movies_col = self.mongo.db.movies
@@ -245,10 +110,15 @@ class MovieService:
             movie = movies_col.find_one({"id": movie_id})
 
             # If enriched already, populate & return
-            if movie and "credits" in movie and isinstance(movie["credits"].get("cast"), list) and isinstance(movie["credits"]["cast"][0], ObjectId):
-                movie["credits"]["cast"] = populate_actor_refs(movie["credits"]["cast"][:6])
-                movie["credits"]["crew"] = populate_actor_refs(movie["credits"]["crew"])
+            if movie and "credits" in movie and isinstance(movie["credits"].get("cast"), list):
+                cast_list = movie["credits"].get("cast", [])
+                # Ensure that no out-of-range error happens when slicing
+                if len(cast_list) > 6:
+                    movie["credits"]["cast"] = populate_actor_refs(cast_list[:6])
+                else:
+                    movie["credits"]["cast"] = populate_actor_refs(cast_list)
                 return movie
+
 
             # 🧪 Fetch from TMDB directly
             print(f"🔄 Fetching movie {movie_id} from TMDB...")
