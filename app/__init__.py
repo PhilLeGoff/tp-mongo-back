@@ -25,9 +25,11 @@ def create_app():
     from .routes.movies import movies_bp
     from .routes.genres import genres_bp
     from .routes.actors import actors_bp
+    from .routes.favorites import favorites_bp
     app.register_blueprint(movies_bp, url_prefix='/films')
     app.register_blueprint(genres_bp, url_prefix='/genres')
     app.register_blueprint(actors_bp, url_prefix='/actors')
+    app.register_blueprint(favorites_bp, url_prefix='/favorites')
 
     # Error handlers
     from .errors.handlers import register_error_handlers

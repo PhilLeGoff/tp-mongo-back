@@ -19,20 +19,11 @@ class MovieService:
     def get_movie(self, movie_id):
         return Movie.get_by_id(self.mongo, ObjectId(movie_id))
 
-    def get_popular_movies(mongo, limit=10):
-        return list(
-            mongo.db.movies.find({}, {"_id": 0})
-            .sort("popularity", -1)
-            .limit(limit)
-        )
+    def get_popular_movies(self, limit=10):
+        return Movie.get_popular_movies(self.mongo, limit)
 
     def get_latest_movies(self, limit=10):
-        return list(
-            self.mongo.db.movies.find(
-                {"release_date": {"$exists": True, "$ne": ""}},
-                {"_id": 0}
-            ).sort("release_date", -1).limit(limit)
-        )
+        return Movie.get_latest(self.mongo, limit)
 
     def get_top_rated_movies(self, limit=10):
         return list(
@@ -51,24 +42,14 @@ class MovieService:
         )
 
     def get_most_appreciated_genres(self, limit=5):
-        pipeline = [
-            {"$unwind": "$genres"},
-            {"$group": {
-                "_id": "$genres.name",
-                "avgRating": {"$avg": "$vote_average"},
-                "count": {"$sum": 1}
-            }},
-            {"$sort": {"avgRating": -1, "count": -1}},
-            {"$limit": limit}
-        ]
-        return list(self.mongo.db.movies.aggregate(pipeline))
+        return Movie.get_most_appreciated_genres(self.mongo, limit)
 
     def get_best_movies_by_decade(self):
-        decades = self.get_available_decades()
+        decades = Movie.get_available_decades(self.mongo)
         results = []
 
         for decade in decades:
-            movie = self.get_best_movie_for_decade(decade)
+            movie = Movie.get_best_movie_for_decade(self.mongo, decade)
             if movie:
                 # Ajoute la décennie directement dans le titre
                 movie["title"] = f"{movie['title']} ({decade})"
@@ -173,7 +154,7 @@ class MovieService:
 
     def get_title_frequency(self):
         return Movie.get_title_frequency(self.mongo)
-    
+
     def get_new_releases(self):
         return list(self.mongo.db.movies.find(
             {"release_date": {"$exists": True, "$ne": ""}},
