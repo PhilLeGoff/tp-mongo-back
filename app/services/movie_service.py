@@ -199,31 +199,31 @@ class MovieService:
             print("❌ Error in get_detailed_movie:", e)
             return None
 
-def get_recommendations(self, user_ip, limit=15):
-        favorites = list(self.mongo.db.favorites.find({"ip": user_ip}))
-        if not favorites:
-            return []
-
-        genre_counter = Counter()
-
-        for fav in favorites:
-            movie = self.get_movie(fav["movie_id"])
-            if movie and "genres" in movie:
-                for g in movie["genres"]:
-                    genre_name = g["name"] if isinstance(g, dict) else g
-                    genre_counter[genre_name] += 1
-
-        if not genre_counter:
-            return []
-
-        top_genres = [g for g, _ in genre_counter.most_common(2)]
-
-        query = {
-            "genres": {"$elemMatch": {"name": {"$in": top_genres}}},
-            "vote_average": {"$gte": 7.0}
-        }
-
-        return list(self.mongo.db.movies.find(
-            query,
-            {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
-        ).sort("vote_average", -1).limit(limit))
+    def get_recommendations(self, user_ip, limit=15):
+            favorites = list(self.mongo.db.favorites.find({"ip": user_ip}))
+            if not favorites:
+                return []
+    
+            genre_counter = Counter()
+    
+            for fav in favorites:
+                movie = self.get_movie(fav["movie_id"])
+                if movie and "genres" in movie:
+                    for g in movie["genres"]:
+                        genre_name = g["name"] if isinstance(g, dict) else g
+                        genre_counter[genre_name] += 1
+    
+            if not genre_counter:
+                return []
+    
+            top_genres = [g for g, _ in genre_counter.most_common(2)]
+    
+            query = {
+                "genres": {"$elemMatch": {"name": {"$in": top_genres}}},
+                "vote_average": {"$gte": 7.0}
+            }
+    
+            return list(self.mongo.db.movies.find(
+                query,
+                {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
+            ).sort("vote_average", -1).limit(limit))

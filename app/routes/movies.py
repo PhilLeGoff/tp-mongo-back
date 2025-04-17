@@ -100,14 +100,14 @@ def get_critically_acclaimed():
 def get_underrated():
     return jsonify(movie_service.get_underrated_gems(limit=15)), 200
 
-@movies_bp.route("/long-watches", methods=["GET"])
-def get_long_watches():
-    return jsonify(movie_service.get_long_movies()), 200
+@movies_bp.route("/best-french", methods=["GET"])
+def get_best_french_movies():
+    return jsonify(movie_service.get_best_french_movies())
 
-@movies_bp.route("/short-movies", methods=["GET"])
-def get_short_movies():
-    return jsonify(movie_service.get_short_movies()), 200
-
+@movies_bp.route("/best-action", methods=["GET"])
+def get_best_action_movies():
+    return jsonify(movie_service.get_best_action_movies())
+    
 @movies_bp.route("/nostalgia-90s", methods=["GET"])
 def get_nostalgia_90s():
     return jsonify(movie_service.get_best_movies_by_decade(1990)), 200
