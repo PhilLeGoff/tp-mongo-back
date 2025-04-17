@@ -12,7 +12,7 @@ def create_app():
     load_dotenv()
     # config = configparser.ConfigParser()
     # config.read(os.path.abspath(os.path.join(".ini")))
-    CORS(app, origins=["http://localhost:5173", "http://localhost:8080"])
+    CORS(app, origins=["http://localhost:5173"])
     # Configuration
     # app.config["MONGO_URI"] = config['PROD']['DB_URI']
     # app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
@@ -24,12 +24,8 @@ def create_app():
     # Register blueprints
     from .routes.movies import movies_bp
     from .routes.genres import genres_bp
-    from .routes.actors import actors_bp
-    from .routes.favorites import favorites_bp
     app.register_blueprint(movies_bp, url_prefix='/films')
     app.register_blueprint(genres_bp, url_prefix='/genres')
-    app.register_blueprint(actors_bp, url_prefix='/actors')
-    app.register_blueprint(favorites_bp, url_prefix='/favorites')
 
     # Error handlers
     from .errors.handlers import register_error_handlers
