@@ -12,7 +12,7 @@ def create_app():
     load_dotenv()
     # config = configparser.ConfigParser()
     # config.read(os.path.abspath(os.path.join(".ini")))
-    CORS(app, origins=["http://localhost:5173"])
+    CORS(app, origins=["http://localhost:5173", "http://localhost:8080"])
     # Configuration
     # app.config["MONGO_URI"] = config['PROD']['DB_URI']
     # app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
