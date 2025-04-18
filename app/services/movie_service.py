@@ -230,3 +230,41 @@ class MovieService:
                 query,
                 {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
             ).sort("vote_average", -1).limit(limit))
+    
+    def update_latest_movies(self, pages=2):
+        movies_col = self.mongo.db.movies
+        new_movies = []
+
+        for page in range(1, pages + 1):
+            url = f"{os.getenv("TMDB_BASE")}/movie/now_playing"
+            params = {
+                "api_key": os.getenv("TMDB_API_KEY"),
+                "language": "en-US",
+                "page": page
+            }
+
+            res = requests.get(url, params=params)
+            if res.status_code != 200:
+                print(f"❌ TMDB error on page {page}: {res.status_code}")
+                continue
+
+            for movie in res.json().get("results", []):
+                # Only insert if it doesn't exist
+                if not movies_col.find_one({"id": movie["id"]}):
+                    movie["fetched_at"] = datetime.utcnow()
+                    new_movies.append(movie)
+                    movies_col.insert_one(movie)
+                else:
+                    # Optional: update poster path, title, etc.
+                    movies_col.update_one(
+                        {"id": movie["id"]},
+                        {"$set": {
+                            "poster_path": movie.get("poster_path"),
+                            "release_date": movie.get("release_date"),
+                            "title": movie.get("title"),
+                            "popularity": movie.get("popularity"),
+                            "fetched_at": datetime.utcnow()
+                        }}
+                    )
+
+        print(f"✅ {len(new_movies)} new movies added to the database.")

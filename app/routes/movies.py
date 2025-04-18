@@ -146,3 +146,14 @@ def get_movie_details(movie_id):
 @movies_bp.route("/best-by-decade", methods=["GET"])
 def route_best_movies_by_decade():
     return (movie_service.get_best_movies_by_decade()), 200
+
+@movies_bp.route("/update-latest", methods=["GET"])
+def updateDB():
+    try:
+        print("in the routes")
+        movie_service.update_latest_movies()
+        # return additional homepage data if needed
+        return jsonify({"message": "Home loaded, latest movies updated."}), 200
+    except Exception as e:
+        print("❌ Error updating homepage:", e)
+        return jsonify({"error": "Something went wrong."}), 500
