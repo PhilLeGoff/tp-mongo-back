@@ -228,7 +228,7 @@ class MovieService:
 
             return list(self.mongo.db.movies.find(
                 query,
-                {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
+                {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1, "id": 1}
             ).sort("vote_average", -1).limit(limit))
 
     def search_movies(self, keyword, genre, page, limit):
