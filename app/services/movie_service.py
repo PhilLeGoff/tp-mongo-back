@@ -230,12 +230,10 @@ class MovieService:
                 query,
                 {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
             ).sort("vote_average", -1).limit(limit))
-<<<<<<< HEAD
 
     def search_movies(self, keyword, genre, page, limit):
         return Movie.search_movies(self.mongo, keyword, genre, page, limit)
-=======
-    
+
     def update_latest_movies(self, pages=2):
         movies_col = self.mongo.db.movies
         new_movies = []
@@ -273,4 +271,3 @@ class MovieService:
                     )
 
         print(f"✅ {len(new_movies)} new movies added to the database.")
->>>>>>> 1b845ba2855405532912d8441097a56534f180a9
