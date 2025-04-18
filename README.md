@@ -1,93 +1,123 @@
-# Movie Explorer – Backend Flask
+# Backend – Movie Explorer API
 
-Ce dépôt correspond à l’API backend de l’application **Movie Explorer**, construite avec **Flask** et connectée à une base de données **MongoDB**. L’API expose des routes permettant de récupérer et manipuler des données sur les films, les genres, les acteurs et les favoris des utilisateurs.
-
----
-
-## Objectif de l'application
-
-Fournir une API RESTful permettant au frontend de :
-
-- Récupérer des listes de films (populaires, récents, par genre...)
-- Visualiser des données analytiques sur les genres et films appréciés
-- Gérer des favoris liés à l’adresse IP de l’utilisateur
-- Explorer les informations liées aux acteurs
+Ce dépôt contient l'API REST du projet **Movie Explorer**, développée avec Flask et MongoDB. Elle alimente l'interface utilisateur en données sur les films, genres, acteurs et favoris, en s'appuyant notamment sur l'API The Movie Database (TMDB).
 
 ---
 
-## Structure du projet
+## Démarrage rapide
 
-```
-tp-mongo-back/
-├── app/
-│   ├── routes/              # Routes Flask (films, genres, favoris...)
-│   ├── services/            # Logique métier
-│   ├── models/              # Modèles MongoDB (si utilisés)
-│   ├── extensions.py        # Initialisation Mongo
-│   ├── errors/              # Gestion centralisée des erreurs
-│   └── __init__.py          # Création de l'application Flask
-├── Dockerfile
-├── run.py
-├── requirements.txt
-└── .env.example
+### 1. Créer un fichier `.env`
+
+À la racine du dossier `tp-mongo-back`, créez un fichier `.env` contenant :
+
+```env
+DB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/movie-app?retryWrites=true&w=majority
+TMDB_API_KEY=your_tmdb_api_key
+TMDB_BASE=https://api.themoviedb.org/3
 ```
 
----
+> Un fichier `.env.example` est fourni à titre de modèle.
 
-## Lancer l'application en développement
+### 2. Lancer l'API en local sans Docker
+
+Assurez-vous d'avoir Python 3.11 installé, ainsi que `pip` :
 
 ```bash
+python -m venv venv
+source venv/bin/activate  # ou venv\Scripts\activate sous Windows
 pip install -r requirements.txt
 python run.py
 ```
 
-> Le backend s’exécutera par défaut sur http://localhost:5000
+L'API sera disponible sur : `http://localhost:5000`
 
----
-
-## Lancer avec Docker
+### 3. Lancer l'API avec Docker
 
 ```bash
 docker build -t tp-mongo-backend .
 docker run -p 5000:5000 --env-file .env tp-mongo-backend
 ```
 
----
+Ou via `docker-compose` depuis le dossier parent :
 
-## Routes principales disponibles
-
-### Films (`/films`)
-- `GET /` – Liste complète des films
-- `GET /<id>` – Détail d’un film
-- `GET /cursor` – Pagination par curseur
-- `GET /popular`, `/latest`, `/top-rated`, `/hottest`
-- `GET /analytics/overview` – Données analytiques (genres appréciés, etc.)
-- `GET /recommended` – Recommandations personnalisées
-- `GET /new-releases`, `/critically-acclaimed`, `/underrated`, `/nostalgia-90s`, etc.
-
-### Genres (`/genres`)
-- `GET /` – Liste des genres
-- `GET /popular` – Genres les plus fréquents
-- `GET /<genre_name>` – Films populaires par genre
-
-### Favoris (`/favorites`)
-- `GET /` – Liste des favoris pour l’utilisateur (via IP)
-- `POST /toggle` – Ajoute ou retire un film des favoris
-
-### Acteurs (`/actors`)
-- `GET /<id>` – Détails sur un acteur
-
----
-
-## Variables d’environnement (exemple dans `.env.example`)
-
-```env
-DB_URI=mongodb+srv://.../movie-app
-SECRET_KEY=xxxxxxxxxx
+```bash
+docker-compose up --build
 ```
 
 ---
 
-## Licence
+## Endpoints disponibles
 
-Projet pédagogique développé dans le cadre d’un exercice universitaire. Utilisation libre à des fins éducatives.
+Les routes suivantes sont exposées :
+
+### Films
+
+- `GET /films/` — Liste de tous les films
+- `GET /films/<movie_id>` — Détail d’un film
+- `GET /films/search` — Recherche (par titre, genre, etc.)
+- `GET /films/latest` — Dernières sorties
+- `GET /films/hottest` — Films les plus tendances
+- `GET /films/top-rated` — Films les mieux notés
+- `GET /films/analytics/overview` — Statistiques globales
+- `GET /films/title_frequency` — Répartition des titres
+- `GET /films/details/<movie_id>` — Infos enrichies via TMDB
+- `GET /films/update-latest` — Synchronisation avec TMDB
+- Suggestions :
+  - `/films/recommended/`
+  - `/films/most-popular`
+  - `/films/critically-acclaimed`
+  - `/films/underrated`
+  - `/films/best-french`
+  - `/films/best-action`
+  - `/films/nostalgia-90s`
+  - `/films/sci-fi`
+  - `/films/true-stories`
+  - `/films/best-by-decade`
+
+### Acteurs
+
+- `GET /actors/<actor_id>` — Détail d’un acteur (depuis TMDB)
+
+### Genres
+
+- `GET /genres/` — Liste complète des genres
+- `GET /genres/popular?limit=N` — Genres les plus populaires
+- `GET /genres/<genre_name>` — Films populaires d’un genre
+
+### Favoris
+
+Les favoris sont gérés par adresse IP :
+
+- `GET /favorites/` — Récupérer ses favoris
+- `POST /favorites/toggle` — Ajouter/retirer un film
+
+---
+
+## Stack technique
+
+- **Python 3.11** avec **Flask**
+- **MongoDB Atlas** comme base de données NoSQL
+- **Flask-CORS** pour permettre les appels frontend
+- **Dotenv** pour la configuration par environnement
+- **Requests** pour communiquer avec l’API TMDB
+
+---
+
+## Organisation du code
+
+```txt
+app/
+├── routes/         # Routes Flask (films, genres, acteurs, favoris)
+├── services/       # Logique métier et communication TMDB
+├── models/         # Représentation des entités (Movie, Genre, etc.)
+├── errors/         # Gestion des erreurs
+├── extensions.py   # Initialisation des extensions (Mongo)
+├── config.py       # (optionnel) Configuration supplémentaire
+└── __init__.py     # Création de l'application Flask
+```
+
+---
+
+## Remarque
+
+Le backend peut être utilisé indépendamment ou via le projet global `tp-mongo`, qui intègre aussi le frontend React et la configuration Docker.
