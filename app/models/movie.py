@@ -76,7 +76,7 @@ class Movie:
         ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit))
 
     @staticmethod
-    def get_most_appreciated_genres(mongo, limit=5):
+    def get_most_appreciated_genres(mongo, limit=10):
         pipeline = [
             {"$unwind": "$genres"},
             {"$group": {
