@@ -239,7 +239,7 @@ class MovieService:
         new_movies = []
 
         for page in range(1, pages + 1):
-            url = f"{os.getenv("TMDB_BASE")}/movie/now_playing"
+            url = f"{os.getenv('TMDB_BASE')}/movie/now_playing"
             params = {
                 "api_key": os.getenv("TMDB_API_KEY"),
                 "language": "en-US",
