@@ -74,7 +74,7 @@ class Movie:
             },
             {"_id": 0, "title": 1, "vote_average": 1, "vote_count": 1, "release_date": 1, "poster_path": 1, "id": 1}
         ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit))
-    
+
     @staticmethod
     def get_most_appreciated_genres(mongo, limit=5):
         pipeline = [
@@ -185,7 +185,7 @@ class Movie:
                 {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1, "id": 1}
             ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
         )
-    
+
     @staticmethod
     def get_best_action_movies(mongo, limit=10):
         return list(
@@ -198,7 +198,7 @@ class Movie:
                 {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1, "id": 1}
             ).sort([("vote_average", -1), ("vote_count", -1)]).limit(limit)
         )
-    
+
     @staticmethod
     def get_movies_from_90s(mongo, limit=15):
         return list(
@@ -211,7 +211,7 @@ class Movie:
                 {"_id": 0, "title": 1, "poster_path": 1, "id": 1}
             ).sort("release_date", 1).limit(limit)
         )
-    
+
     @staticmethod
     def get_movies_by_genre(mongo, genre_name):
         return list(mongo.db.movies.find(
@@ -278,7 +278,47 @@ class Movie:
                 "$sort": {"release_date": 1}
             }
         ]
-    
+
         return list(mongo.db.movies.aggregate(pipeline))
-    
-    
+
+    @staticmethod
+    def search_movies(mongo, keyword, genre, page, limit):
+        pipeline = []
+
+        if keyword:
+            pipeline.append({
+                "$match": {
+                    "title": {
+                        "$regex": keyword,
+                        "$options": "i"
+                    }
+                }
+            })
+
+        if genre:
+            pipeline.append({
+                "$match": {
+                    "genres.name": genre
+                }
+            })
+
+        # Count total results
+        count_pipeline = pipeline.copy()
+        count_pipeline.append({"$count": "total"})
+        total_result = list(mongo.db.movies.aggregate(count_pipeline))
+        total = total_result[0]['total'] if total_result else 0
+
+        # Pagination logic
+        skip = (page - 1) * limit
+        pipeline.append({"$skip": skip})
+        pipeline.append({"$limit": limit})
+
+        movies = list(mongo.db.movies.aggregate(pipeline))
+
+        return {
+            "results": movies,
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "total_pages": (total + limit - 1) // limit
+        }

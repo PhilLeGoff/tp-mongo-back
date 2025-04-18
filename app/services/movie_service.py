@@ -81,7 +81,7 @@ class MovieService:
 
     def get_movies_cursor(self, last_id=None, per_page=10):
         return Movie.get_all_cursor(self.mongo, last_id, per_page)
-    
+
     def get_best_movies_per_decade(self):
         return Movie.get_best_movies_per_decade(self.mongo)
 
@@ -206,27 +206,30 @@ class MovieService:
             favorites = list(self.mongo.db.favorites.find({"ip": user_ip}))
             if not favorites:
                 return []
-    
+
             genre_counter = Counter()
-    
+
             for fav in favorites:
                 movie = self.get_movie(fav["movie_id"])
                 if movie and "genres" in movie:
                     for g in movie["genres"]:
                         genre_name = g["name"] if isinstance(g, dict) else g
                         genre_counter[genre_name] += 1
-    
+
             if not genre_counter:
                 return []
-    
+
             top_genres = [g for g, _ in genre_counter.most_common(2)]
-    
+
             query = {
                 "genres": {"$elemMatch": {"name": {"$in": top_genres}}},
                 "vote_average": {"$gte": 7.0}
             }
-    
+
             return list(self.mongo.db.movies.find(
                 query,
                 {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
             ).sort("vote_average", -1).limit(limit))
+
+    def search_movies(self, keyword, genre, page, limit):
+        return Movie.search_movies(self.mongo, keyword, genre, page, limit)

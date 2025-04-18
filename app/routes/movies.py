@@ -71,7 +71,7 @@ def hottest_movies():
     except Exception as e:
         print("❌ ERROR in hottest_movies:", e)
         return jsonify({"error": "Internal Server Error"}), 500
-      
+
 @movies_bp.route('/title_frequency', methods=['GET'])
 def get_title_frequency():
     movies = list(movie_service.get_title_frequency())
@@ -107,7 +107,7 @@ def get_best_french_movies():
 @movies_bp.route("/best-action", methods=["GET"])
 def get_best_action_movies():
     return jsonify(movie_service.get_best_action_movies())
-    
+
 @movies_bp.route("/nostalgia-90s", methods=["GET"])
 def get_nostalgia_90s():
     return jsonify(movie_service.get_best_movies_by_decade(1990)), 200
@@ -146,3 +146,12 @@ def get_movie_details(movie_id):
 @movies_bp.route("/best-by-decade", methods=["GET"])
 def route_best_movies_by_decade():
     return (movie_service.get_best_movies_by_decade()), 200
+
+
+@movies_bp.route('/search', methods=['GET'])
+def search_movies():
+    keyword = request.args.get('q', '')
+    genre = request.args.get('genre', '')
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 10))
+    return jsonify(movie_service.search_movies(mongo, keyword, genre, page, limit)), 200
