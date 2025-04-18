@@ -150,21 +150,21 @@ class Movie:
     def get_critically_acclaimed(mongo):
         return list(mongo.db.movies.find(
             {"vote_average": {"$gte": 8}, "vote_count": {"$gt": 1000}},
-            {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1}
+            {"_id": 0, "title": 1, "poster_path": 1, "vote_average": 1, "id": 1}
         ).sort("vote_average", -1).limit(15))
 
     @staticmethod
     def get_long_movies(mongo):
         return list(mongo.db.movies.find(
             {"runtime": {"$gte": 150}, "poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1}
+            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1, "id": 1}
         ).limit(15))
 
     @staticmethod
     def get_short_movies(mongo):
         return list(mongo.db.movies.find(
             {"runtime": {"$lte": 90}, "poster_path": {"$ne": None}},
-            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1}
+            {"_id": 0, "title": 1, "poster_path": 1, "runtime": 1, "id": 1}
         ).limit(15))
 
     @staticmethod

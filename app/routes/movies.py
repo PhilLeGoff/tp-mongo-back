@@ -153,7 +153,8 @@ def search_movies():
     genre = request.args.get('genre', '')
     page = int(request.args.get('page', 1))
     limit = int(request.args.get('limit', 10))
-    return jsonify(movie_service.search_movies(mongo, keyword, genre, page, limit)), 200
+
+    return jsonify(movie_service.search_movies(keyword, genre, page, limit)), 200
 
 @movies_bp.route("/update-latest", methods=["GET"])
 def updateDB():
