@@ -52,7 +52,7 @@ def analytics_overview():
     try:
         data = {
             "appreciatedGenres": movie_service.get_most_appreciated_genres(),
-            "topMoviesByDecade": movie_service.get_best_movies_by_decade(1960),
+            "topMoviesByDecade": movie_service.get_best_movies_per_decade(),
             "topRated": movie_service.get_top_rated_movies(),
             "surprise": movie_service.get_underrated_gems()
         }
@@ -142,3 +142,7 @@ def get_movie_details(movie_id):
     if movie:
         return jsonify(movie)
     return jsonify({"error": "Movie not found"}), 404
+
+@movies_bp.route("/best-by-decade", methods=["GET"])
+def route_best_movies_by_decade():
+    return (movie_service.get_best_movies_by_decade()), 200

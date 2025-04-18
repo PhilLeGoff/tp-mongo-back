@@ -225,3 +225,60 @@ class Movie:
             {"overview": {"$regex": "true story", "$options": "i"}},
             {"_id": 0, "title": 1, "poster_path": 1, "id": 1}
         ).limit(15))
+
+    @staticmethod
+    def get_best_movies_per_decade(mongo):
+        pipeline = [
+            {
+                "$match": {
+                    "release_date": {"$exists": True, "$ne": ""},
+                    "vote_average": {"$gt": 0},
+                    "vote_count": {"$gt": 50}
+                }
+            },
+            {
+                "$addFields": {
+                    "year": {"$toInt": {"$substr": ["$release_date", 0, 4]}}
+                }
+            },
+            {
+                "$addFields": {
+                    "decade": {
+                        "$concat": [
+                            {"$toString": {"$multiply": [{"$floor": {"$divide": ["$year", 10]}}, 10]}},
+                            "s"
+                        ]
+                    }
+                }
+            },
+            {
+                "$sort": {"vote_average": -1, "vote_count": -1}
+            },
+            {
+                "$group": {
+                    "_id": "$decade",
+                    "movie": {"$first": "$$ROOT"}
+                }
+            },
+            {
+                "$replaceRoot": {"newRoot": "$movie"}
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "id": 1,
+                    "title": 1,
+                    "vote_average": 1,
+                    "vote_count": 1,
+                    "poster_path": 1,
+                    "release_date": 1
+                }
+            },
+            {
+                "$sort": {"release_date": 1}
+            }
+        ]
+    
+        return list(mongo.db.movies.aggregate(pipeline))
+    
+    

@@ -81,6 +81,9 @@ class MovieService:
 
     def get_movies_cursor(self, last_id=None, per_page=10):
         return Movie.get_all_cursor(self.mongo, last_id, per_page)
+    
+    def get_best_movies_per_decade(self):
+        return Movie.get_best_movies_per_decade(self.mongo)
 
     def get_detailed_movie(self, movie_id):
         try:
