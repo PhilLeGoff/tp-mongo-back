@@ -21,6 +21,7 @@ def create_app():
     # Initialize extensions
     mongo.init_app(app)
 
+    # print(mongo.db.list_collection_names())
     # Register blueprints
     from .routes.movies import movies_bp
     from .routes.genres import genres_bp

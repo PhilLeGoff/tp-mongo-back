@@ -284,6 +284,7 @@ class Movie:
     @staticmethod
     def search_movies(mongo, keyword, genre, page, limit):
         pipeline = []
+        # print(genre)
 
         if keyword:
             pipeline.append({
@@ -299,15 +300,18 @@ class Movie:
             pipeline.append({
                 "$match": {
                     "genres.name": genre
+                    # "genre_ids": genre_id
                 }
             })
+        
+        print(genre)
 
         # Count total results
         count_pipeline = pipeline.copy()
         count_pipeline.append({"$count": "total"})
         total_result = list(mongo.db.movies.aggregate(count_pipeline))
         total = total_result[0]['total'] if total_result else 0
-
+        print(total_result)
         # Pagination logic
         skip = (page - 1) * limit
         pipeline.append({"$skip": skip})
